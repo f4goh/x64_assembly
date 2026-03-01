@@ -1,0 +1,8 @@
+float_num dd 3.14       ; 32-bit float (single precision)
+double_num dq 3.1415926535 ; 64-bit float (double precision)
+
+dd → single precision (4 octets)
+
+dq → double precision (8 octets)
+
+dt → extended precision (10 octets, spécifique x87)
