@@ -1,11 +1,4 @@
 
-;
-;grep flags /proc/cpuinfo | head -1
-;flags		: 
-;fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ht tm pbe syscall nx rdtscp lm 
-;constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr
-;pdcm pcid sse4_1 sse4_2 popcnt lahf_lm pti ssbd ibrs ibpb stibp tpr_shadow flexpriority ept vpid dtherm ida arat vnmi flush_l1d
-
 ;----------------------------------------------------------
 ;Titre : Explication de movdqa et paddd avec exemple NASM
 ;----------------------------------------------------------
