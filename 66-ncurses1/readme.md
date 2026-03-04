@@ -1,14 +1,13 @@
 # NCURSES EN ASSEMBLEUR (NASM x86-64)
 
-Compilation type :
+## Compilation
+
+Pour compiler le programme assembleur utilisant ncurses :
 
 nasm -f elf64 main.asm -o main.o
 gcc -no-pie main.o -o main -lncurses
 
-
-============================================================
-1) INSTALLATION DE NCURSES (DEBIAN / UBUNTU)
-============================================================
+## 1) Installation de NCURSES (Debian / Ubuntu)
 
 Installer la librairie et les headers :
 
@@ -20,51 +19,34 @@ Vérifier l’installation :
 ls /usr/include/ncurses.h
 ldconfig -p | grep ncurses
 
-
-============================================================
-2) PRINCIPE DE NCURSES
-============================================================
+## 2) Principe de NCURSES
 
 ncurses est une bibliothèque C permettant :
-- l'affichage texte avancé
-- la gestion clavier
-- les couleurs
-- les fenêtres
-- le rafraîchissement optimisé
+- L'affichage texte avancé
+- La gestion clavier
+- Les couleurs
+- Les fenêtres
+- Le rafraîchissement optimisé
 
-IMPORTANT :
-ncurses est conçue pour fonctionner avec un programme C.
-Donc en ASM :
-- on définit "main"
-- PAS "_start"
-- on laisse GCC gérer le runtime
+Important : ncurses est conçue pour fonctionner avec un programme C. En ASM, il faut définir main et pas _start ; GCC gère le runtime.
 
-
-============================================================
-3) RAPPEL ABI SYSTEM V AMD64 (PASSAGE DES PARAMÈTRES)
-============================================================
+## 3) Rappel ABI System V AMD64 (passage des paramètres)
 
 En Linux x86-64, les 6 premiers arguments sont passés dans :
-
-RDI → 1er argument
-RSI → 2e
-RDX → 3e
-RCX → 4e
-R8  → 5e
-R9  → 6e
+- 1er argument → RDI
+- 2e argument → RSI
+- 3e argument → RDX
+- 4e argument → RCX
+- 5e argument → R8
+- 6e argument → R9
 
 Valeur de retour → RAX
 
-IMPORTANT pour fonctions variadiques (ex: mvprintw) :
-EAX doit contenir 0 avant l’appel.
+Important pour fonctions variadiques (ex : mvprintw) : EAX doit contenir 0 avant l’appel.
 
-
-============================================================
-4) TON EXEMPLE EXPLIQUÉ
-============================================================
+## 4) Exemple expliqué
 
 global main
-
 extern initscr
 extern mvprintw
 extern refresh
@@ -76,82 +58,23 @@ section .data
 
 section .text
 main:
-    sub rsp, 8
+    sub rsp, 8           ; alignement de la stack
+    call initscr          ; initialise ncurses
+    mov rdi, 5            ; y
+    mov rsi, 10           ; x
+    mov rdx, msg          ; pointeur vers chaîne
+    xor eax, eax          ; obligatoire pour fonction variadique
+    call mvprintw         ; affiche le message
+    call refresh          ; met à jour l’écran physique
+    call getch            ; attend une touche
+    call endwin           ; quitte ncurses proprement
+    add rsp, 8
+    xor eax, eax          ; return 0
+    ret
 
+Pourquoi sub rsp, 8 ? L’ABI impose que RSP soit aligné sur 16 octets avant un call. GCC entre dans main avec un stack désaligné de 8 octets.
 
-Pourquoi "sub rsp, 8" ?
-
-L’ABI impose que RSP soit aligné sur 16 octets avant un call.
-GCC entre dans main avec un stack désaligné de 8.
-On corrige donc avec "sub rsp, 8".
-
-
-------------------------------------------------------------
-initscr()
-------------------------------------------------------------
-
-call initscr
-
-Aucun paramètre.
-Initialise le mode ncurses.
-
-
-------------------------------------------------------------
-mvprintw(y, x, msg)
-------------------------------------------------------------
-
-mov rdi, 5      ; y
-mov rsi, 10     ; x
-mov rdx, msg    ; pointeur vers chaîne
-xor eax, eax    ; obligatoire (fonction variadique)
-call mvprintw
-
-Equivalent C :
-mvprintw(5, 10, "Hello ...");
-
-
-------------------------------------------------------------
-refresh()
-------------------------------------------------------------
-
-call refresh
-
-Met à jour l’écran physique.
-
-
-------------------------------------------------------------
-getch()
-------------------------------------------------------------
-
-call getch
-
-Attend une touche.
-Retour dans RAX.
-
-
-------------------------------------------------------------
-endwin()
-------------------------------------------------------------
-
-call endwin
-
-Quitte proprement ncurses.
-
-
-------------------------------------------------------------
-Fin du programme
-------------------------------------------------------------
-
-add rsp, 8
-xor eax, eax
-ret
-
-Retourne 0 au système.
-
-
-============================================================
-5) FONCTIONS NCURSES LES PLUS UTILES
-============================================================
+## 5) Fonctions ncurses les plus utiles
 
 Initialisation :
 - initscr()
@@ -183,10 +106,7 @@ Fenêtres :
 - box(win, 0, 0)
 - wrefresh(win)
 
-
-============================================================
-6) EXEMPLE MINIMAL AVEC OPTIONS UTILES
-============================================================
+## 6) Exemple minimal avec options utiles
 
 extern noecho
 extern cbreak
@@ -201,46 +121,28 @@ mov rdi, 0
 mov rsi, 1
 call keypad
 
+## 7) Points importants en ASM
 
-============================================================
-7) POINTS IMPORTANTS EN ASM
-============================================================
+1. Toujours aligner la stack avant call
+2. Mettre xor eax, eax pour les fonctions variadiques
+3. Déclarer les fonctions avec extern
+4. Utiliser global main
+5. Compiler avec GCC pour linker ncurses
 
-1) Toujours aligner la stack avant call.
-2) Mettre xor eax, eax pour les fonctions variadiques.
-3) Déclarer les fonctions avec "extern".
-4) Utiliser "global main".
-5) Compiler avec GCC pour linker ncurses.
+## 8) Erreurs courantes
 
+Erreur : multiple definition of _start  
+Cause : utilisation de _start au lieu de main
 
-============================================================
-8) ERREURS COURANTES
-============================================================
+Erreur : undefined reference to main  
+Cause : GCC attend une fonction main
 
-Erreur :
-multiple definition of _start
+## 9) Structure type d’un programme ncurses en ASM
 
-Cause :
-utilisation de "_start" au lieu de "main".
-
-Erreur :
-undefined reference to main
-
-Cause :
-GCC attend une fonction main.
-
-
-============================================================
-9) STRUCTURE TYPE D’UN PROGRAMME NCURSES EN ASM
-============================================================
-
-1) initscr
-2) configuration (noecho, cbreak, keypad...)
-3) boucle principale
-4) refresh
-5) getch
-6) endwin
-7) return 0
-
-
-
+1. initscr  
+2. Configuration (noecho, cbreak, keypad...)  
+3. Boucle principale  
+4. refresh  
+5. getch  
+6. endwin  
+7. return 0
