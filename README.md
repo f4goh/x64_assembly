@@ -1,5 +1,7 @@
 # x64_assembly
 
+![vscode](./images/vscode.png)
+
 [asm_tutorial](https://sonictk.github.io/asm_tutorial/)
 
 # x86-64 Registers
