@@ -87,18 +87,82 @@
 
 # Register Summary Table
 
-| Register | Purpose |
-|--------|--------|
-| RAX | Accumulator (math, return values) |
-| RBX | Base register |
-| RCX | Counter (loops, shifts) |
-| RDX | Data register |
-| RSI | Source index (string ops) |
-| RDI | Destination index |
-| RBP | Base pointer (stack frame) |
-| RSP | Stack pointer |
-| RIP | Instruction pointer |
-| R8–R15 | Additional general registers (64-bit mode) |
+# Table des registres x86-64
+
+| Registre    | Taille      | Usage / Description                            |
+|-------------|-------------|-----------------------------------------------|
+| **Registres généraux 64-bit**                               |
+| RAX         | 64-bit      | Accumulateur (math, valeurs retour)           |
+| RBX         | 64-bit      | Base register                                  |
+| RCX         | 64-bit      | Compteur (boucles, décalages)                  |
+| RDX         | 64-bit      | Registre données                               |
+| RSI         | 64-bit      | Source index (opérations chaînes)              |
+| RDI         | 64-bit      | Destination index                              |
+| RBP         | 64-bit      | Base pointer (cadre de pile)                    |
+| RSP         | 64-bit      | Stack pointer (pointeur de pile)                |
+| RIP         | 64-bit      | Instruction pointer (adresse courante)         |
+| R8 - R15    | 64-bit      | Registres généraux supplémentaires (64-bit)    |
+
+| **Registres généraux 32-bit**                              |
+| EAX         | 32-bit      | Partie basse 32-bit de RAX                      |
+| EBX         | 32-bit      | Partie basse 32-bit de RBX                      |
+| ECX         | 32-bit      | Partie basse 32-bit de RCX                      |
+| EDX         | 32-bit      | Partie basse 32-bit de RDX                      |
+| ESI         | 32-bit      | Partie basse 32-bit de RSI                      |
+| EDI         | 32-bit      | Partie basse 32-bit de RDI                      |
+| EBP         | 32-bit      | Partie basse 32-bit de RBP                      |
+| ESP         | 32-bit      | Partie basse 32-bit de RSP                      |
+| R8D - R15D  | 32-bit      | Partie basse 32-bit de R8-R15                   |
+
+| **Registres généraux 16-bit**                              |
+| AX          | 16-bit      | Partie basse 16-bit de RAX                      |
+| BX          | 16-bit      | Partie basse 16-bit de RBX                      |
+| CX          | 16-bit      | Partie basse 16-bit de RCX                      |
+| DX          | 16-bit      | Partie basse 16-bit de RDX                      |
+| SI          | 16-bit      | Partie basse 16-bit de RSI                      |
+| DI          | 16-bit      | Partie basse 16-bit de RDI                      |
+| BP          | 16-bit      | Partie basse 16-bit de RBP                      |
+| SP          | 16-bit      | Partie basse 16-bit de RSP                      |
+| R8W - R15W  | 16-bit      | Partie basse 16-bit de R8-R15                   |
+
+| **Registres généraux 8-bit**                               |
+| AL, AH      | 8-bit       | Parties basse (AL) et haute (AH) de AX          |
+| BL, BH      | 8-bit       | Parties basse (BL) et haute (BH) de BX          |
+| CL, CH      | 8-bit       | Parties basse (CL) et haute (CH) de CX          |
+| DL, DH      | 8-bit       | Parties basse (DL) et haute (DH) de DX          |
+| SIL, DIL    | 8-bit       | Parties basses 8-bit de SI et DI                 |
+| BPL, SPL    | 8-bit       | Parties basses 8-bit de BP et SP                 |
+| R8B - R15B  | 8-bit       | Parties basses 8-bit de R8-R15                    |
+
+| **Registres SIMD / Vectoriels**                           |
+| XMM0 - XMM15 | 128-bit    | Registres SSE / SIMD                             |
+| YMM0 - YMM15 | 256-bit    | Registres AVX                                   |
+| ZMM0 - ZMM31 | 512-bit    | Registres AVX-512                               |
+
+| **Registres MMX (FPU integer registers)**                |
+| MM0 - MM7    | 64-bit     | Registres MMX                                   |
+
+| **Registres de contrôle**                                |
+| CR0 - CR15   | 64-bit     | Registres de contrôle du CPU                    |
+
+| **Registres de débogage**                                |
+| DR0 - DR15   | 64-bit     | Registres de débogage                            |
+
+| **Registres de segment**                                 |
+| CS, DS, SS, ES, FS, GS | 16-bit | Registres de segment                   |
+
+| **Registres du FPU (Floating Point Unit)**               |
+| CW, SW, TW   | 16-bit     | Control, Status, Tag Word                      |
+| FP_IP, FP_DP | 32-bit     | Instruction Pointer, Data Pointer (FPU)       |
+| FP_CS        | 16-bit     | Code Segment (FPU)                             |
+| FP_OPC       | 16-bit     | Opcode (FPU)                                   |
+
+| **Registre Flags**                                       |
+| RFLAGS, EFLAGS, FLAGS | 64/32/16-bit | Registre des flags CPU (état, contrôle)  |
+
+| **Registres spéciaux**                                  |
+| MXCSR        | 32-bit     | Registre de contrôle SSE                       |
+| GDTR, IDTR, LDTR, TR | N/A | Registres de descripteurs et trace           |
 
 
 ---
