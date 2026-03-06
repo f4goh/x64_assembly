@@ -9,112 +9,79 @@
 
 ## General Purpose Registers (A, B, C, D)
 
-```
- 63                31            15        7        0
- +------------------+------------+--------+--------+
- |       RAX        |    EAX     |   AX   | AH | AL |
- +------------------+------------+--------+--------+
+| Register (64-bit) | Bits 63–32 | Bits 31–16 | Bits 15–8 | Bits 7–0 |
+|-------------------|------------|------------|-----------|----------|
+| RAX               | RAX[63:32] | EAX[31:16] | AH        | AL       |
+| RBX               | RBX[63:32] | EBX[31:16] | BH        | BL       |
+| RCX               | RCX[63:32] | ECX[31:16] | CH        | CL       |
+| RDX               | RDX[63:32] | EDX[31:16] | DH        | DL       |
 
- +------------------+------------+--------+--------+
- |       RBX        |    EBX     |   BX   | BH | BL |
- +------------------+------------+--------+--------+
+### Correspondance des sous-registres
 
- +------------------+------------+--------+--------+
- |       RCX        |    ECX     |   CX   | CH | CL |
- +------------------+------------+--------+--------+
-
- +------------------+------------+--------+--------+
- |       RDX        |    EDX     |   DX   | DH | DL |
- +------------------+------------+--------+--------+
-```
+| 64-bit | 32-bit | 16-bit | 8-bit High | 8-bit Low |
+|------|------|------|------|------|
+| RAX | EAX | AX | AH | AL |
+| RBX | EBX | BX | BH | BL |
+| RCX | ECX | CX | CH | CL |
+| RDX | EDX | DX | DH | DL |
 
 ---
 
 # 64-bit Mode Only Registers (R8–R15)
 
-```
- 63                31            15        7        0
- +------------------+------------+--------+--------+
- |        R8        |    R8D     |  R8W   |  R8B   |
- +------------------+------------+--------+--------+
-
- +------------------+------------+--------+--------+
- |        R9        |    R9D     |  R9W   |  R9B   |
- +------------------+------------+--------+--------+
-
- +------------------+------------+--------+--------+
- |       R10        |   R10D     | R10W   | R10B   |
- +------------------+------------+--------+--------+
-
- +------------------+------------+--------+--------+
- |       R11        |   R11D     | R11W   | R11B   |
- +------------------+------------+--------+--------+
-
- +------------------+------------+--------+--------+
- |       R12        |   R12D     | R12W   | R12B   |
- +------------------+------------+--------+--------+
-
- +------------------+------------+--------+--------+
- |       R13        |   R13D     | R13W   | R13B   |
- +------------------+------------+--------+--------+
-
- +------------------+------------+--------+--------+
- |       R14        |   R14D     | R14W   | R14B   |
- +------------------+------------+--------+--------+
-
- +------------------+------------+--------+--------+
- |       R15        |   R15D     | R15W   | R15B   |
- +------------------+------------+--------+--------+
-```
+| Register (64-bit) | 32-bit | 16-bit | 8-bit |
+|-------------------|--------|--------|-------|
+| R8                | R8D    | R8W    | R8B   |
+| R9                | R9D    | R9W    | R9B   |
+| R10               | R10D   | R10W   | R10B  |
+| R11               | R11D   | R11W   | R11B  |
+| R12               | R12D   | R12W   | R12B  |
+| R13               | R13D   | R13W   | R13B  |
+| R14               | R14D   | R14W   | R14B  |
+| R15               | R15D   | R15W   | R15B  |
 
 ---
 
 # Special Purpose Registers
 
-```
- +------------------+
- |       RIP        |  Instruction Pointer
- +------------------+
-
- +------------------+
- |       RSP        |  Stack Pointer
- +------------------+
-
- +------------------+
- |       RBP        |  Base Pointer
- +------------------+
-
- +------------------+
- |       RSI        |  Source Index
- +------------------+
-
- +------------------+
- |       RDI        |  Destination Index
- +------------------+
-```
+| Register | Description          |
+|----------|----------------------|
+| RIP      | Instruction Pointer  |
+| RSP      | Stack Pointer        |
+| RBP      | Base Pointer         |
+| RSI      | Source Index         |
+| RDI      | Destination Index    |
 
 ---
 
 # RFLAGS Register
 
-```
- 63                                                   0
- +-----------------------------------------------------+
- |                     RFLAGS                          |
- +-----------------------------------------------------+
+| Bit Position | Flag | Description               |
+|--------------|------|---------------------------|
+| 0            | CF   | Carry Flag                |
+| 2            | PF   | Parity Flag               |
+| 4            | AF   | Auxiliary Carry Flag      |
+| 6            | ZF   | Zero Flag                 |
+| 7            | SF   | Sign Flag                 |
+| 8            | TF   | Trap Flag                 |
+| 9            | IF   | Interrupt Enable Flag     |
+| 10           | DF   | Direction Flag            |
+| 11           | OF   | Overflow Flag             |
 
- Important Flags
+---
 
- CF  Carry Flag
- PF  Parity Flag
- AF  Auxiliary Carry Flag
- ZF  Zero Flag
- SF  Sign Flag
- TF  Trap Flag
- IF  Interrupt Enable Flag
- DF  Direction Flag
- OF  Overflow Flag
-```
+| Register | Description |
+|----------|-------------|
+| RFLAGS   | CPU Status Flags Register (64-bit) |
+
+---
+
+
+### Visualisation de RFLAGS (bits 11 à 0)
+
+| Bit 11 | Bit 10 | Bit 9 | Bit 8 | Bit 7 | Bit 6 | Bit 5 | Bit 4 | Bit 3 | Bit 2 | Bit 1 | Bit 0 |
+|--------|--------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
+| OF     | DF     | IF    | TF    | SF    | ZF    | -     | AF    | -     | PF    | -     | CF    |
 
 ---
 
@@ -138,19 +105,16 @@
 
 # Stack Layout Example
 
-```
-High Address
-+-------------------+
-| Function args     |
-+-------------------+
-| Return Address    |
-+-------------------+
-| Old RBP           |
-+-------------------+
-| Local Variables   |
-+-------------------+
-Low Address
-```
+### Stack Layout
+
+| Stack Section       | Description          |
+|--------------------|--------------------|
+| High Address        |                    |
+| Function args       | Arguments passed to the function |
+| Return Address      | Address to return after function call |
+| Old RBP             | Saved base pointer (previous stack frame) |
+| Local Variables     | Variables local to the function |
+| Low Address         |                    |
 
 ---
 
