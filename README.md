@@ -4,6 +4,15 @@
 
 [asm_tutorial](https://sonictk.github.io/asm_tutorial/)
 
+# x86-64 Instruction set
+
+[Instruction set 1](https://www.felixcloutier.com/x86/)
+
+[Instruction set 2](http://ref.x86asm.net/coder64.html)
+
+[Instruction_Encoding](http://wiki.osdev.org/X86-64_Instruction_Encoding)
+
+
 # x86-64 Registers
 
 ![registers](./images/regs.png)
@@ -644,35 +653,316 @@ buf64   resq 2
 
 ---
 
-## Particularités de `mov` sur variables
+# Particularités de `mov` sur variables
 
-Quand on écrit dans une adresse mémoire, NASM **ne déduit pas la taille automatiquement**. 
+Quand on écrit dans une adresse mémoire, NASM **ne déduit pas la taille automatiquement**.
 
-### Exemples d’écriture en mémoire
+## Exemples d’écriture en mémoire
 
-mov byte [match], 1       ; écrit 1 octet (8 bits) à l'adresse de match 
-mov word [match], 123     ; écrit 2 octets (16 bits) 
-mov dword [match], 100000 ; écrit 4 octets (32 bits) 
-mov qword [match], 10000000000 ; écrit 8 octets (64 bits) 
+```asm
+mov byte [match], 1            ; écrit 1 octet (8 bits) à l'adresse de match
+mov word [match], 123          ; écrit 2 octets (16 bits)
+mov dword [match], 100000      ; écrit 4 octets (32 bits)
+mov qword [match], 10000000000 ; écrit 8 octets (64 bits)
+```
 
-- La taille doit toujours être précisée (`byte`, `word`, `dword`, `qword`) pour éviter l'erreur : 
-  operation size not specified 
+La taille doit toujours être précisée (`byte`, `word`, `dword`, `qword`) pour éviter l'erreur :
 
-### Exemples de lecture mémoire selon le registre
+```
+operation size not specified
+```
 
-mov al, [match]   ; AL = 8 bits → NASM sait qu'on lit 1 octet 
-mov ax, [match]   ; AX = 16 bits → NASM sait qu'on lit 2 octets 
-mov eax, [match]  ; EAX = 32 bits → NASM sait qu'on lit 4 octets 
-mov rax, [match]  ; RAX = 64 bits → NASM sait qu'on lit 8 octets 
+## Exemples de lecture mémoire selon le registre
 
-### Exemples d’écriture dans un registre (taille implicite)
+```asm
+mov al, [match]   ; AL = 8 bits  → NASM sait qu'on lit 1 octet
+mov ax, [match]   ; AX = 16 bits → NASM sait qu'on lit 2 octets
+mov eax, [match]  ; EAX = 32 bits → NASM sait qu'on lit 4 octets
+mov rax, [match]  ; RAX = 64 bits → NASM sait qu'on lit 8 octets
+```
 
-mov al, 100       ; AL = 8 bits 
-mov ax, 100       ; AX = 16 bits 
-mov eax, 100      ; EAX = 32 bits 
-mov rax, 100      ; RAX = 64 bits 
+## Exemples d’écriture dans un registre (taille implicite)
+
+```asm
+mov al, 100    ; AL = 8 bits
+mov ax, 100    ; AX = 16 bits
+mov eax, 100   ; EAX = 32 bits
+mov rax, 100   ; RAX = 64 bits
+```
+
+## Résumé
+
+| Instruction | Taille |
+|-------------|--------|
+| `byte`  | 8 bits |
+| `word`  | 16 bits |
+| `dword` | 32 bits |
+| `qword` | 64 bits |
+
+- **Écriture mémoire** → taille obligatoire  
+- **Lecture mémoire vers registre** → taille déduite du registre  
+- **Écriture dans registre** → taille implicite
 
 ---
+# NASM — Particularités de l'instruction `mov` avec la mémoire
+
+L'instruction `mov` est utilisée pour **copier une valeur** d'une source vers une destination.
+
+Syntaxe générale :
+
+```asm
+mov destination, source
+```
+
+Cependant, lorsqu'on manipule **la mémoire**, NASM ne peut pas toujours deviner la taille des données. Il faut donc parfois **spécifier explicitement la taille**.
+
+---
+
+# 1. Pourquoi NASM demande la taille ?
+
+La mémoire est simplement une **suite d'octets**.  
+Une adresse mémoire seule ne donne **aucune information sur la taille de la donnée**.
+
+Exemple :
+
+```asm
+mov [match], 1
+```
+
+NASM ne sait pas si on veut écrire :
+
+- 1 octet
+- 2 octets
+- 4 octets
+- 8 octets
+
+Donc l'assembleur produit l'erreur :
+
+```
+operation size not specified
+```
+
+---
+
+# 2. Écriture en mémoire (taille obligatoire)
+
+Quand on **écrit dans une adresse mémoire**, il faut indiquer la taille.
+
+```asm
+mov byte  [match], 1
+mov word  [match], 123
+mov dword [match], 100000
+mov qword [match], 10000000000
+```
+
+| Instruction | Taille écrite | Description |
+|--------------|---------------|-------------|
+| `byte`  | 8 bits  | 1 octet |
+| `word`  | 16 bits | 2 octets |
+| `dword` | 32 bits | 4 octets |
+| `qword` | 64 bits | 8 octets |
+
+---
+
+# 3. Lecture depuis la mémoire
+
+Quand on **lit la mémoire dans un registre**, NASM peut déduire la taille **grâce au registre**.
+
+```asm
+mov al,  [match]
+mov ax,  [match]
+mov eax, [match]
+mov rax, [match]
+```
+
+| Registre | Taille | Octets lus |
+|---------|--------|-----------|
+| `al`  | 8 bits  | 1 |
+| `ax`  | 16 bits | 2 |
+| `eax` | 32 bits | 4 |
+| `rax` | 64 bits | 8 |
+
+Exemple :
+
+```asm
+mov eax, [match]
+```
+
+NASM comprend automatiquement :
+
+```
+mov dword [match]
+```
+
+---
+
+# 4. Écriture dans un registre (taille implicite)
+
+Quand on écrit **dans un registre**, la taille est aussi déduite automatiquement.
+
+```asm
+mov al, 100
+mov ax, 100
+mov eax, 100
+mov rax, 100
+```
+
+| Registre | Taille |
+|--------|--------|
+| `al`  | 8 bits |
+| `ax`  | 16 bits |
+| `eax` | 32 bits |
+| `rax` | 64 bits |
+
+---
+
+# 5. Schéma mémoire simplifié
+
+Supposons :
+
+```asm
+mov dword [match], 100
+```
+
+La mémoire pourrait ressembler à ceci :
+
+```
+Adresse     Contenu
+0x1000      64
+0x1001      00
+0x1002      00
+0x1003      00
+```
+
+Car sur les architectures x86, les valeurs sont stockées en **little endian**.
+
+---
+
+# 6. Exemple complet
+
+```asm
+section .data
+match db 0
+
+section .text
+global _start
+
+_start:
+
+    mov byte [match], 1
+    mov al, [match]
+
+    mov eax, 60
+    xor edi, edi
+    syscall
+```
+
+Ce programme :
+
+1. écrit `1` dans `match`
+2. lit la valeur dans `al`
+3. quitte le programme
+
+---
+
+# 7. Erreurs classiques
+
+## 1️⃣ Oublier la taille
+
+Incorrect :
+
+```asm
+mov [match], 1
+```
+
+Correct :
+
+```asm
+mov byte [match], 1
+```
+
+---
+
+## 2️⃣ Mauvaise taille de registre
+
+Incorrect :
+
+```asm
+mov eax, byte [match]
+```
+
+Correct :
+
+```asm
+mov al, [match]
+```
+
+ou
+
+```asm
+movzx eax, byte [match]
+```
+
+---
+
+# 8. Résumé rapide
+
+| Cas | Taille nécessaire |
+|----|----|
+| écriture mémoire | oui |
+| lecture mémoire → registre | non |
+| écriture registre | non |
+
+Règle simple :
+
+> Si NASM ne peut pas deviner la taille, il faut la préciser.
+
+---
+
+# 9. Tableau récapitulatif des tailles
+
+| Mot-clé | Taille | Nom |
+|------|------|------|
+| `byte` | 8 bits | octet |
+| `word` | 16 bits | mot |
+| `dword` | 32 bits | double mot |
+| `qword` | 64 bits | quadruple mot |
+
+---
+
+# 10. Astuce pour débuter en NASM
+
+Quand tu écris en mémoire :
+
+```
+mov <taille> [adresse], valeur
+```
+
+Exemple :
+
+```
+mov byte [x], 5
+mov word [x], 5
+mov dword [x], 5
+```
+
+Quand tu lis la mémoire :
+
+```
+mov registre, [adresse]
+```
+
+Et la taille sera déduite automatiquement.
+
+---
+
+# Conclusion
+
+La règle principale à retenir :
+
+- **Mémoire → préciser la taille si NASM ne peut pas la deviner**
+- **Registre → la taille est implicite**
+
 
 # Calling Convention (System V - Linux/macOS)
 
